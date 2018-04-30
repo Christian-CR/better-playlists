@@ -85,15 +85,16 @@ class Filter extends Component{
 
 class Playlist extends Component{
   render() {
+    let listadeMusica = this.props.playlist
     return (
     <div style={{...defaultStyle, display: "inline-block", width: "25%"}}>
-      <img/>
-      <h3>Playlist Name</h3>
-      <ul>
-      <li>song 1</li>
-      <li>song 2</li>
-      <li>song 3</li>
-      </ul>
+        <img/>
+        <h3>{listadeMusica.name}</h3>
+        <ul>
+          {listadeMusica.songs.map(song =>
+            <li>{song.name}</li>
+          )}
+        </ul>
       </div>
     );
   }
@@ -112,15 +113,25 @@ class App extends Component {
   }
 
   render() {
+
+    {/*Llamado a la lista con un for loop */}
+    {/*let playlistElements = []
+    if(this.state.serverData.user){
+      for(let i=0; i<this.state.serverData.user.playlists.length; i++){
+        let playlist = this.state.serverData.user.playlists[i]
+        playlistElements.push(<Playlist playlist={playlist} />)
+      }
+    }
+    */}
+
     return (
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-
           {
             this.state.serverData.user &&
             <h1 className="App-title">
-            {this.state.serverData.user.name} Playlist
+              {this.state.serverData.user.name} Playlist
             </h1>
           }
         </header>
@@ -136,10 +147,11 @@ class App extends Component {
                                 this.state.serverData.user.playlists}/>
 
             <Filter/>
-            <Playlist/>
-            <Playlist/>
-            <Playlist/>
-            <Playlist/>
+            {
+              this.state.serverData.user.playlists.map(playlist =>
+                  <Playlist playlist={playlist}/>
+              )}
+
           </section> : <h2>Loading...</h2>
         }
       </div>
