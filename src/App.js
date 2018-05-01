@@ -101,12 +101,35 @@ class Playlist extends Component{
   }
 }
 
+class Inputcambia extends Component{
+
+
+
+  recibirCambio(e){
+    const texto = e.target.value
+    this.props.cambiarTexto(texto)
+  }
+
+
+  render(){
+    return(
+      <section style={{display:'block', margin:'20px auto'}}>
+
+          <h2>{this.props.texto}</h2>
+
+        <input value={this.props.texto} onChange={this.recibirCambio.bind(this)}/>
+      </section>
+    )
+  }
+}
+
 class App extends Component {
   constructor(){
     super();
     this.state = {
       serverData: {},
-      filterString: ''
+      filterString: '',
+      texto: 'Bienvenidos'
     }
   }
   componentDidMount() {
@@ -117,7 +140,9 @@ class App extends Component {
         this.setState({filterString: ''});
     }, 2000)
   }
-
+    cambiarTexto(texto){
+      this.setState({texto})
+    }
   render() {
 
     {/*Llamado a la lista con un for loop */}
@@ -145,7 +170,10 @@ class App extends Component {
               {this.state.serverData.user.name} Playlist
             </h1>
           }
+
         </header>
+
+        <Inputcambia cambiarTexto={this.cambiarTexto.bind(this)} texto={this.state.texto}/>
 
         <Fecha/>
 
