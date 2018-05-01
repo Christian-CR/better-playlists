@@ -76,8 +76,9 @@ class Filter extends Component{
     return(
       <div style={{defaultStyle}}>
       <img/>
-        <input type="text"/>
-        Filter
+        <input className="buscar" type="text" onKeyUp={e =>
+            this.props.onTextChange(e.target.value)}/><br/>
+          <span style={{fontSize: '12px', color: '#555'}}>Filtrar</span>
       </div>
     );
   }
@@ -85,14 +86,14 @@ class Filter extends Component{
 
 class Playlist extends Component{
   render() {
-    let listadeMusica = this.props.playlist
+    let listadeMusica = this.props.milista
     return (
     <div style={{...defaultStyle, display: "inline-block", width: "25%"}}>
         <img/>
         <h3>{listadeMusica.name}</h3>
         <ul>
           {listadeMusica.songs.map(song =>
-            <li>{song.name}</li>
+            <li className="listResult">{song.name} : {Math.round(song.duration/60)}</li>
           )}
         </ul>
       </div>
@@ -103,13 +104,18 @@ class Playlist extends Component{
 class App extends Component {
   constructor(){
     super();
-    this.state = {serverData: {}}
+    this.state = {
+      serverData: {},
+      filterString: ''
+    }
   }
   componentDidMount() {
     setTimeout(() => {
         this.setState({serverData: fakeServerData});
     }, 1000)
-
+    setTimeout(() => {
+        this.setState({filterString: ''});
+    }, 2000)
   }
 
   render() {
@@ -123,6 +129,11 @@ class App extends Component {
       }
     }
     */}
+
+    let playListToRender = this.state.serverData.user ? this.state.serverData.user.playlists
+    .filter(listafiltrada =>
+      listafiltrada.name.toLowerCase().includes(this.state.filterString.toLowerCase())
+    ) : []
 
     return (
       <div className="App">
@@ -139,20 +150,20 @@ class App extends Component {
         <Fecha/>
 
         {this.state.serverData.user ?
-        <section>
-            <PlayListCounter playlists={this.state.serverData.user &&
-                                this.state.serverData.user.playlists}/>
+          <section>
+            {/*Cuenta la cantidad de listas que existen*/}
+              <PlayListCounter playlists={playListToRender}/>
+            {/*Suma los milisegundos de cada canción*/}
+              <HoursCounter playlists={playListToRender}/>
+            {/*Hace el filtrado y muestra las canciones en base a la búsqueda*/}
+              <Filter onTextChange={text => this.setState({filterString: text})}/>
+                {
+                  playListToRender.map(milista =>
+                      <Playlist milista={milista}/>
+                  )
+                }
 
-            <HoursCounter playlists={this.state.serverData.user &&
-                                this.state.serverData.user.playlists}/>
-
-            <Filter/>
-            {
-              this.state.serverData.user.playlists.map(playlist =>
-                  <Playlist playlist={playlist}/>
-              )}
-
-          </section> : <h2>Loading...</h2>
+            </section> : <h2>Loading...</h2>
         }
       </div>
     );
